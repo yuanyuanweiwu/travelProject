@@ -28,6 +28,7 @@
 
       <!-- 侧边栏 -->
       <div class="aside">
+        <FlightsAside />
         <!-- 侧边栏组件 -->
       </div>
     </el-row>
@@ -39,11 +40,12 @@ import moment from "moment";
 import FlightsListHead from "@/components/air/flightsListHead";
 import FlightsItem from "@/components/air/flightsItem";
 import FlightsFilters from "@/components/air/flightsFilters";
+import FlightsAside from "@/components/air/flightsAside";
 export default {
   data() {
     return {
       flightsData: { flights: [], info: {}, options: {} },
-       cacheFlightsData: { lights: [],  info: {},options: {} },
+      cacheFlightsData: { lights: [], info: {}, options: {} },
       //   datalist: [],
       total: 0,
       pageSize: 5,
@@ -53,7 +55,8 @@ export default {
   components: {
     FlightsListHead,
     FlightsItem,
-    FlightsFilters
+    FlightsFilters,
+    FlightsAside
   },
   computed: {
     datalist() {
@@ -69,8 +72,9 @@ export default {
         params: this.$route.query
       }).then(res => {
         this.flightsData = res.data;
-        this.cacheFlightsData={...res.data};
-        this.setDataList()
+        this.cacheFlightsData = { ...res.data };
+
+        this.setDataList();
       });
     },
     handleSizeChange(value) {
@@ -86,12 +90,20 @@ export default {
         this.flightsData.flights = arr;
         this.flightsData.total = arr.length;
       }
-    
     }
   },
   mounted() {
     this.getData();
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.getData();
   }
+  //  watch: {
+  //    $route(){
+  //      this.getData()
+  //    }
+  //  }
 };
 </script>
 

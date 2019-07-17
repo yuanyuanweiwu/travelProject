@@ -97,26 +97,26 @@ export default {
         }
       }).then(res => {
         const { data } = res.data;
+
         const newData = data.map(v => {
           return {
             ...v,
             value: v.name.replace("市", "")
           };
         });
-
         cb(newData);
       });
     },
 
     // 出发城市下拉选择时触发
     handleDepartSelect(item) {
-      this.form.departCity = item.name;
+      this.form.departCity = item.value;
       this.form.departCode = item.sort;
     },
 
     // 目标城市下拉选择时触发
     handleDestSelect(item) {
-      this.form.destCity = item.name;
+      this.form.destCity = item.value;
       this.form.destCode = item.sort;
     },
 
@@ -169,6 +169,18 @@ export default {
       if (!valid) {
         return;
       }
+
+      let arr = JSON.parse(localStorage.getItem("airs") || "[]");
+       
+      if(JSON.stringify(arr).indexOf(JSON.stringify(this.form))==-1){
+            arr.unshift(this.form);
+      } 
+     
+      if (arr.length > 5) {
+        arr.length = 5;
+      }
+      localStorage.setItem("airs", JSON.stringify(arr));
+
       this.$router.push({
         path: "/air/flights",
         query: this.form

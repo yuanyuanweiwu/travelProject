@@ -15,10 +15,10 @@
       <el-col :span="4">
         <el-select size="mini" v-model="flightTimes" placeholder="起飞时间" @change="handleFlightTimes">
           <el-option
-            v-for="(item,index) in data.options.flightTimes"
+            v-for="(item, index) in data.options.flightTimes"
             :key="index"
-            :label="`${item.from}:00-${item.to}:00`"
-            :value="item"
+            :label="`${item.from}:00 - ${item.to}:00`"
+            :value="`${item.from},${item.to}`"
           ></el-option>
         </el-select>
       </el-col>
@@ -70,18 +70,49 @@ export default {
       default: () => {}
     }
   },
+  mounted(){
+   console.log(this.data);
+   
+  },
   methods: {
     handleAirport(value) {
-     const arr=this.data.flights.filter(v=>{
-         return v.org_airport_name==value
-     })
-     
-     this.$emit('setDataList',arr);
+      const arr = this.data.flights.filter(v => {
+        return v.org_airport_name == value;
+      });
+
+      this.$emit("setDataList", arr);
     },
-    handleFlightTimes() {},
-    handleCompany() {},
-    handleAirSize() {},
-    handleFiltersCancel() {}
+    handleFlightTimes(value) {
+      
+      const [form,to]=value.split(',')
+      let start = form < 10 ? 0 + form : form;
+      let end = to < 10 ? 0 + to : to;
+
+      const res = this.data.flights.filter(v => {
+        return v.dep_time > `${start}:00` && v.dep_time < `${end}:00`;
+      });
+      this.$emit("setDataList", res);
+    },
+    handleCompany(value) {
+      const arr = this.data.flights.filter(v => {
+        return v.airline_name == value;
+      });
+      this.$emit("setDataList", arr);
+    },
+    handleAirSize(value) {
+      const arr = this.data.flights.filter(v => {
+        return v.plane_size == value;
+      });
+      this.$emit("setDataList", arr);
+    },
+    handleFiltersCancel() {
+      this.airport = "";
+      this.flightTimes = "";
+      this.company = "";
+      this.airSize = "";
+      const arr = this.data.flights;
+      this.$emit("setDataList", arr);
+    }
   }
 };
 </script>
