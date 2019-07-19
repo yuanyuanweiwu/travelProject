@@ -34,7 +34,8 @@
     <div class="air-colum">
       <h2>保险</h2>
       <div>
-        <div class="insurance-item" v-for="(item,index) in data.insurances" :key="index">
+        <!-- <div class="insurance-item" v-for="(item,index) in data.insurances" :key="index"> -->
+        <div class="insurance-item" v-for="(item,index) in infoData.insurances" :key="index">
           <el-checkbox
             :label="`${item.type}：￥${item.price}/份×${users.length}  最高赔付${item.compensation}`"
             border
@@ -84,31 +85,69 @@ export default {
       invoice: false, // 发票
       select: "",
       selects: [{ value: 1, label: "身份证" }, { value: 2, label: "护照" }],
-      labelPosition: "left"
+      labelPosition: "left",
+
+      infoData: {
+        // 接口返回的数据集合
+        insurances: [],
+        seat_infos: {}
+      }
     };
   },
   computed: {
     allPrice() {
+      // let price = 0;
+      // if (this.data.airport_tax_audlet) {
+      //   // 加单价
+      //   price += this.data.seat_infos.org_settle_price;
+      //   //加保险
+      //   price += this.data.insurances[0].price * this.insurances.length;
+      //   //家机场建设费
+      //   price += this.data.airport_tax_audlet;
+      //   //乘以人数
+      //   price *= this.users.length;
+      // }
+      // this.$emit("setAllPrice", price, this.users.length);
+      // return price;
+
       let price = 0;
-      if (this.data.airport_tax_audlet) {
+      if (this.infoData.airport_tax_audlet) {
         // 加单价
-        price += this.data.seat_infos.org_settle_price;
+        price += this.infoData.seat_infos.org_settle_price;
         //加保险
-        price += this.data.insurances[0].price * this.insurances.length;
+        price += this.infoData.insurances[0].price * this.insurances.length;
         //家机场建设费
-        price += this.data.airport_tax_audlet;
+        price += this.infoData.airport_tax_audlet;
         //乘以人数
         price *= this.users.length;
+
+        this.$store.commit("air/setAllPrice", price);
+        this.$store.commit("air/setCount",this.users.length);
       }
-      this.$emit("setAllPrice", price, this.users.length);
       return price;
     }
   },
-  props: {
-    data: {
-      type: Object,
-      default: () => {}
-    }
+  // props: {
+  //   data: {
+  //     type: Object,
+  //     default: () => {}
+  //   }
+  // },
+
+  // 使用vuex就用下面
+  mounted() {
+    const { id, seat_xid } = this.$route.query;
+    this.$axios({
+      url: "/airs/" + id,
+      params: {
+        seat_xid
+      }
+    }).then(res => {
+      const { data } = res;
+      this.infoData = data;
+      // 保存到store
+      this.$store.commit("air/setInfoData", data);
+    });
   },
   methods: {
     // 添加乘机人
@@ -191,8 +230,8 @@ export default {
         contactPhone: this.contactPhone,
         invoice: this.invoice,
         captcha: this.captcha,
-        seat_xid: this.data.seat_infos.seat_xid,
-        air: this.data.id
+        seat_xid: this.infoData.seat_infos.seat_xid,
+        air: this.infoData.id
       };
 
       const {
@@ -211,6 +250,8 @@ export default {
         }
       })
         .then(res => {
+          console.log(res);
+          
           // 跳转到付款页
           this.$router.push({
             path: "/air/pay"

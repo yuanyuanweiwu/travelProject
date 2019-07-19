@@ -3,14 +3,17 @@
     <el-row type="flex" justify="space-between">
       <!-- 订单表单 -->
       <div class="main">
-        <OrederForm :data="infoData"  @setAllPrice='setAllPrice'/>
+        <!-- 通过父组件props传递 -->
+        <!-- <OrederForm :data="infoData"  @setAllPrice='setAllPrice'/> -->
+        <!-- 通过Vuex传递 -->
+        <OrederForm />
       </div>
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 通过父组件props传递 -->
-        <OrederAside :data="infoData"  :allPrice='allPrice' :count='count'/>
+        <!-- <OrederAside :data="infoData"  :allPrice='allPrice' :count='count'/> -->
         <!-- 通过Vuex传递 -->
-        <!-- <OrederAside  /> -->
+        <OrederAside :data='this.$store.state.air.infoData'/>
       </div>
     </el-row>
   </div>
@@ -29,27 +32,30 @@ export default {
         insurances: [],
         seat_infos: {}
       },
-      allPrice:0,
-      count:0
+      allPrice: 0,
+      count: 0
     };
   },
   methods: {
-    setAllPrice(value1,value2){
-      this.allPrice=value1;
-      this.count=value2
+    setAllPrice(value1, value2) {
+      this.allPrice = value1;
+      this.count = value2;
     }
-  },
-  mounted() {
-    const { query } = this.$route;
-    this.$axios({
-      url: `airs/${query.id}`,
-      params: {
-        seat_xid: query.seat_xid
-      }
-    }).then(res => {
-      this.infoData = res.data;
-    });
   }
+  // 使用vuex就不需要以下
+  // ,
+  // mounted() {
+  //   const { query } = this.$route;
+  //   this.$axios({
+  //     url: `airs/${query.id}`,
+  //     params: {
+  //       seat_xid: query.seat_xid
+  //     }
+  //   }).then(res => {
+  //     this.infoData = res.data;
+
+  //   });
+  // }
 };
 </script>
 <style lang="less" scoped>

@@ -27,16 +27,19 @@
       <el-row class="info-bar" type="flex" justify="space-between">
         <span>成人机票</span>
         <span>¥ {{data.seat_infos.org_settle_price}}</span>
-        <span>{{count}}</span>
+        <!-- <span>{{count}}</span> -->
+        <span>{{this.$store.state.air.count}}</span>
       </el-row>
       <el-row class="info-bar" type="flex" justify="space-between">
         <span>机建+燃油</span>
         <span>¥{{data.airport_tax_audlet}}/人/单程</span>
-        <span>{{count}}</span>
+        <!-- <span>{{count}}</span> -->
+        <span>{{this.$store.state.air.count}}</span>
       </el-row>
       <el-row class="info-bar" type="flex" justify="space-between" align="middle">
         <span>应付总额</span>
-        <span class="totalnumber">¥{{allPrice}}</span>
+        <!-- <span class="totalnumber">¥{{allPrice}}</span> -->
+        <span class="totalnumber">¥{{this.$store.state.air.allPrice}}</span>
       </el-row>
     </div>
   </div>
