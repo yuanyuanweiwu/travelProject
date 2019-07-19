@@ -71,8 +71,7 @@ export default {
     }
   },
   mounted(){
-   console.log(this.data);
-   
+ 
   },
   methods: {
     handleAirport(value) {

@@ -32,7 +32,8 @@ export default {
         if (valid) {
       
           this.$store.dispatch("user/LoginCheck", this.form).then(res => {
-            this.$router.push("/");
+            // this.$router.push("/");
+            this.$router.back()
           });
         }
       });

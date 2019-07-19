@@ -62,6 +62,7 @@
         </el-form>
         <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
       </div>
+      <input type="hidden" :value="allPrice" />
     </div>
   </div>
 </template>
@@ -86,6 +87,23 @@ export default {
       labelPosition: "left"
     };
   },
+  computed: {
+    allPrice() {
+      let price = 0;
+      if (this.data.airport_tax_audlet) {
+        // 加单价
+        price += this.data.seat_infos.org_settle_price;
+        //加保险
+        price += this.data.insurances[0].price * this.insurances.length;
+        //家机场建设费
+        price += this.data.airport_tax_audlet;
+        //乘以人数
+        price *= this.users.length;
+      }
+      this.$emit("setAllPrice", price, this.users.length);
+      return price;
+    }
+  },
   props: {
     data: {
       type: Object,
@@ -105,11 +123,9 @@ export default {
     //保险
     handleInsurances(id) {
       if (this.insurances.indexOf(id) > -1) {
-        let arr = this.insurances.slice(0);
-        arr.splice(this.insurances.indexOf(id), 1);
-        this.insurances - arr;
+        this.insurances.splice(this.insurances.indexOf(id), 1);
       } else {
-        this.insurances = [...new Set([...this.insurances, id])];
+        this.insurances.push(id);
       }
     },
     // 发送手机验证码
@@ -122,14 +138,8 @@ export default {
         });
         return;
       }
-      this.$axios({
-        url: "/captchas",
-        method: "POST",
-        data: {
-          tel: this.contactPhone
-        }
-      }).then(res => {
-        this.$confirm(`模拟手机验证码为：${res.data.data}`, "提示", {
+      this.$store.dispatch("user/sendCode", this.contactPhone).then(res => {
+        this.$confirm(`模拟手机验证码为：${res}`, "提示", {
           confirmButtonText: "确定",
           showCancelButton: false,
           type: "warning"
@@ -206,10 +216,7 @@ export default {
             path: "/air/pay"
           });
         })
-
         .catch(err => {
-          console.log(err);
-
           const { message } = err.response.data;
           this.$confirm(message, "提示", {
             confirmButtonText: "确定",
