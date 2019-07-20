@@ -49,26 +49,36 @@ export default {
   props: {
     data: {
       type: Object,
-      default: ()=>{}
+      default: () => {}
     },
-    allPrice:{
-        type:Number,
-        default:0
+    allPrice: {
+      type: Number,
+      default: 0
     },
-    count:{
-        type:Number,
-        default:1
+    count: {
+      type: Number,
+      default: 1
     }
   },
-   mounted () {
-      // console.log(this.data);
-       
-   },
-   computed: {
-       rankTime(){
-           return 2
-       }
-   }
+  mounted() {},
+  computed: {
+    rankTime() {
+      if (!this.data.arr_time) return "";
+      let dep_time = this.data.dep_time.split(":");
+      let arr_time = this.data.arr_time.split(":");
+
+      if (dep_time[0] > arr_time[0]) {
+        arr_time[0] +=24;
+      }
+
+      let dep_minutes = dep_time[0] * 60 + +dep_time[1];
+      let arr_minutes = arr_time[0] * 60 + +arr_time[1];
+
+      let hours = Math.floor((arr_minutes - dep_minutes) / 60);
+      let minuts = (dep_minutes - arr_minutes) % 60;
+      return `${hours}小时${minuts}分钟`;
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

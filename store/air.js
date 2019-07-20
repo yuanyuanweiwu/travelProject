@@ -14,6 +14,8 @@ export const mutations = {
     // 设置机票的信息
     setInfoData(state, data) {     
         state.infoData = data;
+        console.log(data);
+        
     },
     //更新机票价格
     setAllPrice(state, data) {

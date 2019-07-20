@@ -250,11 +250,10 @@ export default {
         }
       })
         .then(res => {
-          console.log(res);
-          
+          const {id}=res.data.data;
           // 跳转到付款页
           this.$router.push({
-            path: "/air/pay"
+            path: `/air/pay/?id=${id}`
           });
         })
         .catch(err => {
